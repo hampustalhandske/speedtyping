@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js" charset="utf-8"></script>
+    <title>Results</title>
+    <style>
+         .display {
+            display: flex;
+            justify-content: space-around;
+            top: 0;
+        }
+
+            .section {
+            text-align: center;
+        }
+
+            .section h2 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+            .section p {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: #733030;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 0 auto; /* Center horizontally */
+            display: inline-block; /* Ensures the button takes up the full width of its container */
+            position: fixed;
+        }
+
+        #try-again-button {
+            bottom: 50px;
+            left: 40%;
+            transform: translateX(-50%);
+        }
+
+        #show-plot {
+            bottom: 50px;
+            left: 60%;
+            transform: translateX(-50%);
+        }
+
+        #start-test-button:hover {
+            background-color: #0056b3;
+        }
+
+        #plot-container {
+            width: 100%; /* Set the width to fill its parent container */
+            max-width: 800px; /* Set a maximum width */
+            margin: 0 auto; /* Center the container horizontally */
+            padding: 20px; /* Add some padding for spacing */
+            border: none; /* Add a border for visual separation */
+        }
+        .graphs-container {
+            display: flex; /* Use Flexbox layout */
+            justify-content: space-around; /* Distribute items evenly with space around */
+        }
+
+        .graph {
+            width: 500px; /* Set the width of the graph */
+            height: 400px; /* Set the height of the graph */
+            border: 1px solid #ccc; /* Add a border for visibility */
+            margin-bottom: 20px; /* Add some space between graphs */
+            
+
+        }
+
+        #percentage-graph {
+            /* Additional styling for the percentage graph */
+            background-color: #f0f0f0;
+        }
+
+        #wpm-graph {
+            /* Additional styling for the wpm graph */
+            background-color: #e0e0e0;
+        }
+                
+
+        
+
+    </style>
+</head>
+
+<body>
+    <div class="display">
+        <div class="section">
+            <h2>Words per minute (WPM)</h2>
+            <p id="wpm-values">0</p>
+        </div>
+        <div class="section">
+            <h2>Words per secound (WPS)</h2>
+            <p id="wps-values">0</p>
+        </div>
+        <div class="section">
+            <h2>Percentage</h2>
+            <p id="percentage">0%</p>
+        </div>
+    </div>
+    <div class="graphs-container">
+        <div id="percentage-graph" class="graph"></div>
+        <div id="wpm-graph" class="graph"></div>
+    </div>
+
+    <button id="try-again-button" class="button">try again</button>
+    <button id="show-plot" class="button">show histroy</button>
+    <div id="plot-container"></div>
+
+    <script>
+
+        window.onload = function() {
+            stopGame()
+        }
+
+        document.getElementById('try-again-button').addEventListener('click', function() {
+            window.location.href = 'main.html';
+        })
+        document.getElementById('show-plot').addEventListener('click', function() {
+              getPlot();
+              this.classList.add('hidden');
+        })
+
+        function stopGame() {
+
+            fetch('/stop_game', {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const wpm = data.wpm;
+                const wps = data.wps;
+                const percentage = data.percentage;
+
+                document.getElementById('wpm-values').textContent = wpm.toFixed(2);
+                document.getElementById('wps-values').textContent = wps.toFixed(2);
+                document.getElementById('percentage').textContent = percentage.toFixed(2);
+            })
+        }
+
+        function createPlot(divId, nbr, data, layout, color) {
+            const plotData = [{
+                x: nbr,
+                y: data,
+                mode: 'lines',
+                name: name,
+                line: {
+                    color: color
+                }
+            }]
+            Plotly.newPlot(divId, plotData, layout)
+        }
+
+        function getPlot() {
+
+            fetch('/get_plot', {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const wpm = data.wpm;
+                const percentage = data.percentage
+                const nbr = data.nbr
+
+                wpmGraph = document.getElementById('wpm-graph')
+                percentageGraph = document.getElementById('percentage-graph')
+
+                const wpmLayout =  {
+                    title: 'Words Per Minute', // Add a title
+                    xaxis: {
+                        title: 'Times played' // Add a label for the x-axis
+                    },
+                    yaxis: {
+                        title: 'WPM' // Add a label for the y-axis
+                    }}
+                
+                const percentageLayout = {
+                    title: 'Percentage of Correct Words',
+                xaxis: {
+                    title: 'Times Played'
+                },
+                yaxis: {
+                    title: 'Percentage'
+                }
+            }
+
+
+                createPlot(wpmGraph, nbr, wpm, wpmLayout, 'red')
+                createPlot(percentageGraph, nbr, percentage, percentageLayout, 'blue')
+
+            })
+        }
+    </script>
+</body>

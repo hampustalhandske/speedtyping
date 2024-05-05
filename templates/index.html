@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Page</title>
+    <style>
+        body {
+            /* display: flex; */
+            /* justify-content: center; Center horizontally */
+            height: 100vh; 
+            background-color: #e1b397;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+        }
+
+    
+        #start-button {
+            padding: 10px 20px; 
+            font-size: 18px; 
+            background-color: #007bff; 
+            color: #fff; 
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            position: absolute;
+            left: 50%; /* Move the element to the center horizontally */
+            transform: translateX(-50%); /* Adjust the position to center it */
+        }
+
+        /* Hover effect */
+        #startButton:hover {
+            background-color: #0056b3; /* Darker background color on hover */
+        }
+
+
+    </style>
+
+</head>
+<body>
+    <header>
+        <h1>Welcome to the Speed Typing Test</h1>
+    </header>
+    
+    <button id="start-button">Start Test</button>
+
+    <script>
+        document.getElementById('start-button').addEventListener('click', function() {
+            // Redirect to the main page
+            window.location.href = 'main.html';
+        });
+        
+        
+        
+    </script>
+</body>
+</html>
